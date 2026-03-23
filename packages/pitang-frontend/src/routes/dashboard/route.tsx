@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation, redirect } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -15,8 +15,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Fragment } from "react/jsx-runtime";
+import { checkAuthStatus } from "@/contexts/auth-context";
 
 export const Route = createFileRoute("/dashboard")({
+  beforeLoad: async () => {
+    const { isAuthenticated } = await checkAuthStatus();
+    if (!isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: RouteComponent,
 });
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { Link } from "@tanstack/react-router"
 import * as React from "react"
 
 import {
@@ -26,7 +27,7 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton size="sm" render={<a href={item.url} />}>
+              <SidebarMenuButton size="sm" render={<Link to={item.url} />}>
                 {item.icon}
                 <span>{item.title}</span>
               </SidebarMenuButton>

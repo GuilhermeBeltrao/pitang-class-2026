@@ -15,22 +15,42 @@ function getCookie(cookieName: string) {
 
 export function useAuth() {
   const [loggedUser, setLoggedUser] = useState<LoggedUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function getAuthenticatedUser() {
-      const response = await fetch("https://dummyjson.com/auth/me", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${getCookie("@pitang/accessToken")}`,
-        },
-      });
+      try {
+        const token = getCookie("@pitang/accessToken");
+        
+        if (!token) {
+          setIsLoading(false);
+          setIsAuthenticated(false);
+          return;
+        }
 
-      if (!response.ok) {
-        return toast.error("Something went wrong");
+        const response = await fetch("https://dummyjson.com/auth/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          setIsAuthenticated(false);
+          return;
+        }
+
+        const user = await response.json();
+        setLoggedUser(user);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Auth error:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-
-      setLoggedUser(await response.json());
     }
 
     getAuthenticatedUser();
@@ -38,7 +58,8 @@ export function useAuth() {
 
   async function handleLogout() {
     document.cookie = "@pitang/accessToken=; path=/; Max-Age=0";
-
+    setLoggedUser(null);
+    setIsAuthenticated(false);
     navigate({ to: "/login" });
   }
 
@@ -67,12 +88,16 @@ export function useAuth() {
     toast.success("Welcome...");
 
     document.cookie = `@pitang/accessToken=${json.accessToken}; path=/; Max-Age=86400`;
+    setLoggedUser(json);
+    setIsAuthenticated(true);
 
     navigate({ to: "/dashboard" });
   }
 
   return {
     loggedUser,
+    isLoading,
+    isAuthenticated,
     handleLogin,
     handleLogout,
   };
