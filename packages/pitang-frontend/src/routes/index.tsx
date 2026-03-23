@@ -71,7 +71,7 @@ function RouteComponent() {
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-slate-600 text-white hover:bg-slate-800 text-lg px-8">
+              <Button size="lg" className="border border-slate-400 text-white hover:bg-slate-700 hover:border-slate-300 bg-slate-800/50 text-lg px-8 transition-all">
                 Learn More
               </Button>
             </div>
